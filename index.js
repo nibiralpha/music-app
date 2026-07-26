@@ -1,7 +1,7 @@
 import express from "express";
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000; 
 
 // Enable CORS middleware so your React frontend can read this data without errors
 app.use((req, res, next) => {
