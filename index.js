@@ -2,6 +2,7 @@ import express from "express";
 
 const app = express();
 const PORT = process.env.PORT || 5000; 
+const BASEURL = "https://api.deezer.com";
 
 // Enable CORS middleware so your React frontend can read this data without errors
 app.use((req, res, next) => {
@@ -14,10 +15,10 @@ app.use((req, res, next) => {
 });
 
 // Endpoint to fetch Deezer charts
-app.get("/api/music/dashboard", async (req, res) => {
+app.get("/api/top", async (req, res) => {
   try {
     // Fetch global charts directly from Deezer on the server side
-    const response = await fetch("https://api.deezer.com/chart");
+    const response = await fetch(BASEURL + "/chart");
     if (!response.ok) {
       throw new Error(`Deezer API responded with status: ${response.status}`);
     }
