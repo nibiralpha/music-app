@@ -1,7 +1,7 @@
 import express from "express";
 
 const app = express();
-const PORT = process.env.PORT || 5000; 
+const PORT = process.env.PORT || 5000;
 const BASEURL = "https://api.deezer.com";
 
 // Enable CORS middleware so your React frontend can read this data without errors
@@ -55,7 +55,7 @@ app.get("/api/trending", async (req, res) => {
 
     // Return the specific track payload object matching your exact requirements
     res.json({
-      data: tracksSection,
+      tracks: { data: tracksSection },
     });
   } catch (error) {
     console.error("Deezer Server Error:", error);
