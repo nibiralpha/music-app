@@ -43,7 +43,7 @@ app.get("/api/top", async (req, res) => {
 app.get("/api/trending", async (req, res) => {
   try {
     // Fetch global charts directly from Deezer on the server side
-    const response = await fetch(BASEURL + "/chart/0/tracks?limit=20");
+    const response = await fetch(BASEURL + "/editorial/0/releases?limit=20");
     if (!response.ok) {
       throw new Error(`Deezer API responded with status: ${response.status}`);
     }
