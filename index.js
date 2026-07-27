@@ -1,4 +1,8 @@
 import express from "express";
+import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -63,6 +67,27 @@ app.get("/api/trending", async (req, res) => {
       .status(500)
       .json({ error: "Failed to extract music charts from Deezer" });
   }
+});
+
+app.get("/spotify/token", async (req, res) => {
+  // console.log("Zzzz", console.log(process.env.CLIENT_ID));
+
+  const credentials = Buffer.from(
+    `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`,
+  ).toString("base64");
+
+  const response = await axios.post(
+    "https://accounts.spotify.com/api/token",
+    "grant_type=client_credentials",
+    {
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  );
+
+  res.json(response.data);
 });
 
 // Start the server
