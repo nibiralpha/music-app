@@ -40,6 +40,31 @@ app.get("/api/top", async (req, res) => {
   }
 });
 
+app.get("/api/trending", async (req, res) => {
+  try {
+    // Fetch global charts directly from Deezer on the server side
+    const response = await fetch(BASEURL + "/chart/0/tracks?limit=20");
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Extract ONLY the tracks node object safely
+    const tracksSection = fullData.data;
+
+    // Return the specific track payload object matching your exact requirements
+    res.json({
+      data: tracksSection,
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract music charts from Deezer" });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
