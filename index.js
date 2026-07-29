@@ -60,7 +60,7 @@ app.get("/api/song_by_category/:id", async (req, res) => {
 
     // 2. Map the inner data array directly to the tracks key
     res.json({
-      tracks: tracksSection.data,
+      tracks: tracksSection,
     });
   } catch (error) {
     console.error("Deezer Server Error:", error);
