@@ -44,22 +44,26 @@ app.get("/api/top", async (req, res) => {
   }
 });
 
-app.get("/api/trending", async (req, res) => {
+app.get("/api/song_by_category/:id", async (req, res) => {
   try {
-    // Fetch global charts directly from Deezer on the server side
-    const response = await fetch(BASEURL + "/editorial/0/releases?limit=20");
+    // 1. Grab the dynamic ID parameter from the URL path
+    const chartId = req.params.id;
+
+    // 2. Inject the chartId variable into the target Deezer chart URL
+    const response = await fetch(BASEURL + "/chart/" + chartId);
     if (!response.ok) {
       throw new Error(`Deezer API responded with status: ${response.status}`);
     }
 
     const fullData = await response.json();
 
-    // Extract ONLY the tracks node object safely
-    const tracksSection = fullData.data;
+    // 3. The /chart/{id} endpoint separates sections into nodes (.tracks, .albums, .artists)
+    // Extract the tracks block safely from the response
+    const tracksSection = fullData.tracks || { data: [] };
 
-    // Return the specific track payload object matching your exact requirements
+    // 4. Return the filtered track list payload back to your Next.js application
     res.json({
-      tracks: { data: tracksSection },
+      tracks: { tracksSection },
     });
   } catch (error) {
     console.error("Deezer Server Error:", error);
