@@ -70,6 +70,29 @@ app.get("/api/song_by_category/:id", async (req, res) => {
   }
 });
 
+app.get("/api/artist", async (req, res) => {
+  try {
+    const response = await fetch(BASEURL + "/chart/0/artists");
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+    const artistsList = fullData.data || [];
+
+    // Return using the exact object schema and count requested
+    res.json({
+      data: artistsList,
+      total: artistsList.length,
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract artist charts from Deezer" });
+  }
+});
+
 app.get("/spotify/token", async (req, res) => {
   // console.log("Zzzz", console.log(process.env.CLIENT_ID));
 
