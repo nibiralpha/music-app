@@ -93,6 +93,38 @@ app.get("/api/artist", async (req, res) => {
   }
 });
 
+app.get("/api/search_by_genra/:genra", async (req, res) => {
+  try {
+    const genreName = req.params.genre;
+
+    // 1. Fetch data from the explicit Deezer genre search endpoint
+    const response = await fetch(
+      `https://api.deezer.com/search?q=genre:"${genreName}"`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // 2. Destructure properties with fallback values to prevent empty crashes
+    const { data = [], total = 0, next = null } = fullData;
+
+    // 3. Return the exact object structure requested
+    res.json({
+      data,
+      total,
+      next,
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract search data from Deezer" });
+  }
+});
+
 app.get("/spotify/token", async (req, res) => {
   // console.log("Zzzz", console.log(process.env.CLIENT_ID));
 
