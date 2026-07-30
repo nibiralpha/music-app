@@ -127,21 +127,44 @@ app.get("/api/search_by_genra/:genra", async (req, res) => {
 
 app.get("/api/playlist/:id", async (req, res) => {
   try {
-    const playlistId = req.params.id;
+    const { id } = req.params;
 
-    // Changed endpoint from /chart/ to /playlist/
-    const response = await fetch(BASEURL + "/playlist/" + playlistId);
+    const response = await fetch(`${BASEURL}/playlist/${id}`);
+
     if (!response.ok) {
       throw new Error(`Deezer API responded with status: ${response.status}`);
     }
 
     const fullData = await response.json();
 
-    // Safely extract the tracks block, defaulting to an empty array for data
-    // const tracksSection = fullData || { data: [] };
+    // Return the Deezer response as-is
+    res.json(fullData);
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
 
+    res.status(500).json({
+      error: "Failed to fetch playlist from Deezer",
+    });
+  }
+});
+
+app.get("/api/playlists", async (req, res) => {
+  try {
+    const chartId = req.params.id; // Usually '0' for global charts
+
+    // Hits the chart/id/playlists endpoint with a limit of 20
+    const response = await fetch(
+      `${BASEURL}/chart/${chartId}/playlists?limit=20`,
+    );
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Deezer returns an object with a 'data' array containing the playlists
     res.json({
-      data: fullData,
+      data: fullData.data || [],
     });
   } catch (error) {
     console.error("Deezer Server Error:", error);
