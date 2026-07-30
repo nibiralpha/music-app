@@ -95,11 +95,11 @@ app.get("/api/artist", async (req, res) => {
 
 app.get("/api/search_by_genra/:genra", async (req, res) => {
   try {
-    const genreName = req.params.genre;
+    const genreName = req.params.genra;
 
     // 1. Fetch data from the explicit Deezer genre search endpoint
     const response = await fetch(
-      `https://api.deezer.com/search?q=genre:"${genreName}"`,
+      `https://api.deezer.com/search?q=genre:${genreName}`,
     );
 
     if (!response.ok) {
@@ -122,6 +122,32 @@ app.get("/api/search_by_genra/:genra", async (req, res) => {
     res
       .status(500)
       .json({ error: "Failed to extract search data from Deezer" });
+  }
+});
+
+app.get("/api/playlist/:id", async (req, res) => {
+  try {
+    const playlistId = req.params.id;
+
+    // Changed endpoint from /chart/ to /playlist/
+    const response = await fetch(BASEURL + "/playlist/" + playlistId);
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Safely extract the tracks block, defaulting to an empty array for data
+    // const tracksSection = fullData || { data: [] };
+
+    res.json({
+      data: fullData,
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract music playlist from Deezer" });
   }
 });
 
