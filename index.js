@@ -244,6 +244,30 @@ app.get("/api/artist_album/:id", async (req, res) => {
       .json({ error: "Failed to extract music playlist from Deezer" });
   }
 });
+app.get("/api/related_artists/:id", async (req, res) => {
+  try {
+    const id = req.params.id; // Usually '0' for global charts
+
+    // Hits the chart/id/playlists endpoint with a limit of 20
+    const response = await fetch(`${BASEURL}/artist/${id}/related`);
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Deezer returns an object with a 'data' array containing the playlists
+    res.json({
+      data: fullData?.data || [],
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract music playlist from Deezer" });
+  }
+});
+
 
 app.get("/spotify/token", async (req, res) => {
   // console.log("Zzzz", console.log(process.env.CLIENT_ID));
