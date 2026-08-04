@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const BASEURL = "https://api.deezer.com";
 
 // Enable CORS middleware so your React frontend can read this data without errors
@@ -165,6 +165,77 @@ app.get("/api/playlists", async (req, res) => {
     // Deezer returns an object with a 'data' array containing the playlists
     res.json({
       data: fullData.data || [],
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract music playlist from Deezer" });
+  }
+});
+app.get("/api/artist_detail/:id", async (req, res) => {
+  try {
+    const id = req.params.id; // Usually '0' for global charts
+
+    // Hits the chart/id/playlists endpoint with a limit of 20
+    const response = await fetch(`${BASEURL}/artist/${id}?limit=20`);
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Deezer returns an object with a 'data' array containing the playlists
+    res.json({
+      data: fullData || [],
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract music playlist from Deezer" });
+  }
+});
+
+app.get("/api/artist_top_songs/:id", async (req, res) => {
+  try {
+    const id = req.params.id; // Usually '0' for global charts
+
+    // Hits the chart/id/playlists endpoint with a limit of 20
+    const response = await fetch(`${BASEURL}/artist/${id}/top`);
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Deezer returns an object with a 'data' array containing the playlists
+    res.json({
+      data: fullData?.data || [],
+    });
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract music playlist from Deezer" });
+  }
+});
+
+app.get("/api/artist_album/:id", async (req, res) => {
+  try {
+    const id = req.params.id; // Usually '0' for global charts
+
+    // Hits the chart/id/playlists endpoint with a limit of 20
+    const response = await fetch(`${BASEURL}/artist/${id}/albums`);
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const fullData = await response.json();
+
+    // Deezer returns an object with a 'data' array containing the playlists
+    res.json({
+      data: fullData?.data || [],
     });
   } catch (error) {
     console.error("Deezer Server Error:", error);
