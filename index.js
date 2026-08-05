@@ -268,6 +268,29 @@ app.get("/api/related_artists/:id", async (req, res) => {
   }
 });
 
+app.get("/api/genre/:id", async (req, res) => {
+  try {
+    // 1. Extract the dynamic genre ID parameter from the route
+    const genreId = req.params.id;
+
+    // 2. Fetch data directly from the Deezer genre endpoint
+    const response = await fetch(`${BASEURL}/genre/${genreId}`);
+    if (!response.ok) {
+      throw new Error(`Deezer API responded with status: ${response.status}`);
+    }
+
+    const genreData = await response.json();
+
+    // 3. Return the exact genre data object down to your client
+    res.json(genreData);
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to extract genre data from Deezer" });
+  }
+});
+
 
 app.get("/spotify/token", async (req, res) => {
   // console.log("Zzzz", console.log(process.env.CLIENT_ID));
