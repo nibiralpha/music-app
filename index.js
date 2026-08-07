@@ -285,12 +285,33 @@ app.get("/api/genre/:id", async (req, res) => {
     res.json(genreData);
   } catch (error) {
     console.error("Deezer Server Error:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to extract genre data from Deezer" });
+    res.status(500).json({ error: "Failed to extract genre data from Deezer" });
   }
 });
 
+app.get("/api/album/:id", async (req, res) => {
+  try {
+    const albumId = req.params.id;
+
+    const response = await fetch(`${BASEURL}/album/${albumId}`);
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: `Deezer API returned ${response.status}`,
+      });
+    }
+
+    const albumData = await response.json();
+
+    res.json(albumData);
+  } catch (error) {
+    console.error("Deezer Server Error:", error);
+
+    res.status(500).json({
+      error: "Failed to fetch album from Deezer",
+    });
+  }
+});
 
 app.get("/spotify/token", async (req, res) => {
   // console.log("Zzzz", console.log(process.env.CLIENT_ID));
